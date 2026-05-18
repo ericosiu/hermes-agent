@@ -633,6 +633,12 @@ class TestSubcommands:
         assert "list" in SUBCOMMANDS["/cron"]
         assert "add" in SUBCOMMANDS["/cron"]
 
+    def test_goals_has_monitor_scheduler_subcommands(self):
+        assert "/goals" in SUBCOMMANDS
+        assert "monitor" in SUBCOMMANDS["/goals"]
+        assert "schedule" in SUBCOMMANDS["/goals"]
+        assert "unschedule" in SUBCOMMANDS["/goals"]
+
     def test_commands_without_subcommands_not_in_dict(self):
         """Plain commands should not appear in SUBCOMMANDS."""
         assert "/help" not in SUBCOMMANDS
