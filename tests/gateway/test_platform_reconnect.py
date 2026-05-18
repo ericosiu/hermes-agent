@@ -714,3 +714,41 @@ class TestPlatformSlashCommand:
         out = await runner._handle_platform_command(self._make_event("/platform"))
         assert "Gateway platforms" in out
 
+
+class TestRepoGoalsSlashCommand:
+    """Test the /goals gateway slash command handler."""
+
+    def _make_event(self, content: str):
+        ev = MagicMock()
+        ev.text = content
+        ev.content = content
+        return ev
+
+    @pytest.mark.asyncio
+    async def test_goals_delegates_to_repo_goals_module(self, monkeypatch):
+        runner = _make_runner()
+        seen = {}
+
+        def fake_handle(command: str) -> str:
+            seen["command"] = command
+            return "repo goals summary"
+
+        monkeypatch.setattr("hermes_cli.repo_goals.handle_goals_command", fake_handle)
+
+        out = await runner._handle_repo_goals_command(
+            self._make_event("/goals start outbound-autoresearch")
+        )
+
+        assert out == "repo goals summary"
+        assert seen["command"] == "/goals start outbound-autoresearch"
+
+    @pytest.mark.asyncio
+    async def test_goals_truncates_gateway_output(self, monkeypatch):
+        runner = _make_runner()
+        monkeypatch.setattr("hermes_cli.repo_goals.handle_goals_command", lambda _cmd: "x" * 3900)
+
+        out = await runner._handle_repo_goals_command(self._make_event("/goals report outbound-autoresearch"))
+
+        assert len(out) < 3820
+        assert out.endswith("… truncated")
+

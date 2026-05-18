@@ -98,6 +98,7 @@ class TestResolveCommand:
         assert resolve_command("background").name == "background"
         assert resolve_command("copy").name == "copy"
         assert resolve_command("agents").name == "agents"
+        assert resolve_command("goals").name == "goals"
 
     def test_alias_resolves_to_canonical(self):
         assert resolve_command("bg").name == "background"
@@ -322,7 +323,7 @@ class TestSlackNativeSlashes:
     def test_includes_canonical_commands(self):
         names = {n for n, _d, _h in slack_native_slashes()}
         # Sample of gateway-available canonical commands
-        for expected in ("new", "stop", "background", "model", "help"):
+        for expected in ("new", "stop", "background", "model", "help", "goals"):
             assert expected in names, f"missing canonical /{expected}"
 
     def test_excludes_slack_reserved_commands(self):
