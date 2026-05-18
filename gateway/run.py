@@ -8709,8 +8709,10 @@ class GatewayRunner:
         text = (getattr(event, "text", None) or getattr(event, "content", "") or "").strip()
         if not text:
             text = "/goals"
+        source = getattr(event, "source", None)
+        origin = source.to_dict() if source is not None and hasattr(source, "to_dict") else None
         try:
-            output = await asyncio.to_thread(handle_goals_command, text)
+            output = await asyncio.to_thread(handle_goals_command, text, origin=origin)
         except Exception as exc:  # pragma: no cover - defensive
             return f"/goals failed: {exc}"
         if len(output) > 3800:
